@@ -7,11 +7,14 @@ const results = ref([]);
 async function searchEntry() {
   try {
     const entryRef = collection(database, "entries")
-    const q = query(entryRef, where("tags", "array-contains", search.value))
+    const tags = search.value
+      .split(",")
+      .map(tag => tag.trim())
+    const q = query(entryRef, where("tags", "array-contains-any", tags))
     const querySnap = await getDocs(q)
     results.value = querySnap.docs.map(doc => doc.data());
   }catch(err){
-    console.log("Can't find entry")
+    console.error("Can't find entry")
   }
 }
 function downloadEntry(entry) {
